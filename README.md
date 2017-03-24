@@ -1,13 +1,8 @@
 # emcee_description
-This package holds all of the files and code required for visualizing and simulating the robot.  Currently, they are independent from the rest of urmpspace, so you can build separately.  The command to do that is:
-
-`catkin_make --pkg emcee_control emcee_navigation`
-
 The __Package overview__ gives a brief description of what everything is, so that you can orient yourself and start to learn how it works.  A lot of this is launch files.
 
 [See below](#Launching) for how to launch stuff.
-NOTE: Gazebo does not run well on VMs. It also crashes a lot on some computers. It is best with an NVIDIA graphics card.  If it crashes, run `gzclient` in another terminal to see what is going on; else run rviz and an *image* visualization and you can see 1st person.
-
+NOTE: Gazebo does not run well on VMs. It also crashes a lot on some computers. It is best with an NVIDIA graphics card.  If it crashes a lot, it sometimes helps to without the gui (gui:=0) and then `gzclient` in another terminal to see what is going on; if you don't need to the Gazebo gui, you can use rviz and an *image* visualization to see 1st person view.
 
 # Dependencies
 You may need to run these commands to get things going.
