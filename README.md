@@ -1,4 +1,4 @@
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=YOUTUBE_VIDEO_ID_HERE
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=CdpFUFFlBOw
 " target="_blank"><img src="http://img.youtube.com/vi/CdpFUFFlBOw/0.jpg" 
 alt="youtube demo" width="240" height="180" border="10" /></a>
 
