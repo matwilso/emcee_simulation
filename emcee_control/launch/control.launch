@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Load the urdf file that Gazebo and rviz use -->
+  <arg name="model" default="$(find emcee_description)/urdf/emcee.urdf.xacro"/>
+  <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
+
+  <!-- Load the configuration for the controllers of the simulated robot -->
+  <rosparam command="load" file="$(find emcee_control)/config/emcee_control.yaml" />
+
+  <!-- Spawn the controllers specified in args -->
+  <node name="controller_spawner" pkg="controller_manager" type="spawner"
+        args="emcee_joint_state_controller emcee_sled_position_controller emcee_arm_position_controller emcee_bucket_position_controller emcee_velocity_controller --shutdown-timeout 1"  />
+
+  <!-- Takes in whatever sensor data (e.g. odom, imu) is listed in the localization.yaml file and fuses it to get /odometry/filtered data (more accurate). -->
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization">
+      <rosparam command="load" file="$(find emcee_control)/config/emcee_localization.yaml" />
+  </node>
+
+
+  <!-- convert joint states to TF transforms for rviz, etc -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+    <!-- <remap from="/joint_states" to="/emcee/joint_states" /> -->
+  </node>
+
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+
+
+  <!-- We can publish everything to cmd_vel and this sends it to /emcee_velocity_controller -->
+  <node pkg="topic_tools" type="relay" name="cmd_vel_relay"
+    args="/cmd_vel /emcee_velocity_controller/cmd_vel" />
+
+  <!-- This is just an rviz add-on.  It lets you drive the robot by clicking -->
+  <!-- <node pkg="interactive_marker_twist_server" type="marker_server" name="twist_marker_server">
+    <remap from="twist_marker_server/cmd_vel" to="cmd_vel" />
+  </node> -->
+</launch>

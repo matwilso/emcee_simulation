@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<package>
+  <name>emcee_description</name>
+  <version>0.0.0</version>
+  <description>The emcee_description package</description>
+
+  <maintainer email="mattwilsonmbw@gmail.com">Matt Wilson</maintainer>
+
+  <license>BSD</license>
+  <url>http://urmp-gazebo.readthedocs.io</url>
+
+ <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roslaunch</build_depend>
+  <run_depend>controller_manager</run_depend>
+  <run_depend>diff_drive_controller</run_depend>
+  <run_depend>gazebo_plugins</run_depend>
+  <run_depend>gazebo_ros</run_depend>
+  <run_depend>gazebo_ros_control</run_depend>
+  <run_depend>joint_state_controller</run_depend>
+  <run_depend>joint_state_publisher</run_depend>
+  <run_depend>position_controllers</run_depend>
+  <run_depend>pr2_description</run_depend>
+  <run_depend>robot_state_publisher</run_depend>
+  <run_depend>rqt_robot_steering</run_depend>
+  <run_depend>rviz</run_depend>
+  <run_depend>urdf</run_depend>
+  <run_depend>xacro</run_depend>
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- This allows gazebo to find the models: see http://answers.gazebosim.org/question/6568/uri-paths-to-packages-in-the-sdf-model-file/ -->
+  <export>
+    <!-- gazebo_ros_paths_plugin automatically adds these to
+        GAZEBO_PLUGIN_PATH and GAZEBO_MODEL_PATH when you do this export inside
+        the package.xml file. You can than use URIs of type model://my_package/stuff. -->
+    <gazebo_ros
+        gazebo_plugin_path="${prefix}/lib"
+        gazebo_model_path="${prefix}/.." />
+  </export>
+
+</package>

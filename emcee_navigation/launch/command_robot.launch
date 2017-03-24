@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<launch>
+
+<arg name="world" default="nasa" /> <!-- options: empty, nasa, nasa_dirt -->
+<arg name="controller" default="xbox" /> <!-- options: ps3, xbox -->
+<arg name="input" default="js0" />
+<arg name="paused" default="false" />
+<arg name="gui" default="true" />
+<arg name="debug" default="0" />
+
+<rosparam param="debug" subst_value="True">$(arg debug)</rosparam>
+
+<!-- Start the gazebo world -->
+<include file="$(find emcee_description)/launch/gazebo.launch">
+  <arg name="world" default="$(arg world)" />
+  <arg name="paused" default="$(arg paused)" />
+  <arg name="gui" default="$(arg gui)" />
+</include>
+
+<!-- Launch the controllers -->
+<include file="$(find emcee_control)/launch/control.launch" />
+
+<!-- <node pkg="emcee_navigation" type="robot_driver" name="robot_driver" output="screen" respawn="true"/> -->
+
+
+</launch>

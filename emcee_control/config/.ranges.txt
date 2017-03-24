@@ -1,0 +1,4 @@
+# These are joint ranges that I used to tune pid gains. http://gazebosim.org/tutorials?tut=ros_control&cat=connect_ros#Visualizethecontroller%27sperformance
+0.154175 * sin(5*i/100) -0.0508 #sled
+0.2811785 * sin(5*i/100) + 0.0280015 #arm
+0.9853975 * sin(5*i/100) + 0.585395 #bucket

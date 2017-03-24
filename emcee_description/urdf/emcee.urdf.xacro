@@ -1,0 +1,420 @@
+<?xml version="1.0"?>
+<robot name="emcee" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:property name="PI" value="3.1415926535897931"/>
+
+  <xacro:property name="wheelbase" value="0.262"/>
+  <xacro:property name="track" value="0.37559"/>
+  <xacro:property name="wheel_vertical_offset" value="0.0345"/>
+  <xacro:property name="footprint_vertical_offset" value="-0.0655"/>
+
+  <xacro:property name="wheel_radius" value="0.098"/>
+  <xacro:property name="wheel_width" value="0.040"/>
+
+  <xacro:property name="chassis_length" value="0.420"/>
+  <xacro:property name="chassis_width" value="0.310"/>
+  <xacro:property name="chassis_height" value="0.184"/>
+
+  <xacro:property name="dummy_inertia" value="1e-09"/>
+
+  <xacro:property name="mount_spacing" value="0.120"/>
+
+  <material name="dark_grey"><color rgba="0.2 0.2 0.2 1.0"/></material>
+  <material name="light_grey"><color rgba="0.4 0.4 0.4 1.0"/></material>
+  <material name="stl"><color rgba="0.8 0.8 0.0 1.0"/></material>
+  <material name="red"><color rgba="0.95 0.26 0.21 1.0"/></material>
+  <material name="black"><color rgba="0.15 0.15 0.15 1.0"/></material>
+  <material name="green"><color rgba="0 1 0 1"/></material>
+
+  <xacro:property name="base_height" value="0.24765"/>
+  <xacro:property name="base_width" value="0.3191"/>
+  <xacro:property name="base_length" value="0.81"/>
+
+  <xacro:property name="wheel_radius" value="0.156369"/>
+  <xacro:property name="wheel_width" value="0.1905"/>
+  <xacro:property name="wheel_location_from_back" value="0.2572"/>
+  <xacro:property name="wheel_location_from_front" value="0.08255"/>
+  <xacro:property name="wheel_height" value="0.047625"/>
+  <xacro:property name="sled_width" value="0.50165"/>
+  <xacro:property name="sled_length" value="0.5588"/>
+  <xacro:property name="sled_height" value="0.03175"/>
+  <xacro:property name="arm_block_width" value="0.5588"/>
+  <xacro:property name="arm_block_height" value="0.250825"/>
+  <xacro:property name="arm_block_depth" value="0.0508"/>
+  <xacro:property name="sensor_mount_width" value="0.0508"/>
+  <xacro:property name="sensor_mount_depth" value="0.0254"/>
+  <xacro:property name="sensor_mount_height" value="0.3048"/>
+  <!-- <xacro:property name="sensor_mount_height" value="0.28" /> -->
+  <xacro:property name="arm_primary_length_pivot" value="0.59055"/>
+  <xacro:property name="arm_width" value="0.0505"/>
+  <xacro:property name="arm_separation" value="0.5476875"/>
+  <xacro:property name="arm_secondary_length" value="0.43815"/>
+  <xacro:property name="bucket_width" value="0.7239"/>
+  <xacro:property name="bucket_depth" value="0.3175"/>
+  <xacro:property name="bucket_height" value="0.1651"/>
+  <xacro:property name="arm_angle" value="0.8555"/>
+
+
+  <!-- BUG: At slow velocities, the robot can't turn well; it starts skidding forward.  I think it has to do with the friction, inertia, whatever   -->
+  <xacro:macro name="wheel" params="prefix reflect *joint_pose">
+    <link name="${prefix}_wheel_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+        <geometry>
+          <!-- <mesh filename="package://emcee_description/meshes/visual/wheel.dae"/> -->
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="${PI/2} 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <!-- <origin xyz="0.032464 0 0" rpy="0 0 0"/> -->
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <!-- <mass value="1" /> -->
+        <mass value="8.6"/>
+        <!-- moment of inertia of a cylinder https://en.wikipedia.org/wiki/List_of_moments_of_inertia#List_of_3D_inertia_tensors -->
+        <inertia ixx="0.0785782304" ixy="0" ixz="0" iyy="0.0785782304" iyz="0" izz="0.1051404359"/>
+        <!-- <inertia
+          ixx="${(1.0/12.0)*8.6*(3*wheel_radius**2 + wheel_width**2)}" ixy="0" ixz="0"
+          iyy="${(1.0/12.0)*8.6*(3*wheel_radius**2 + wheel_width**2)}" iyz="0"
+          izz="${0.5*8.6*wheel_radius}"/> -->
+      </inertial>
+
+    </link>
+
+    <gazebo reference="${prefix}_wheel_link">
+      <!-- TODO: set these constants. They are just taken from urdf_tutorial. 09 -->
+      <mu1 value="5"/>
+      <mu2 value="5"/>
+      <!-- <minDepth>0.00</minDepth> -->
+      <material>Gazebo/DarkGrey</material>
+    </gazebo>
+
+    <joint name="${prefix}_wheel" type="continuous">
+      <parent link="chassis"/>
+      <child link="${prefix}_wheel_link"/>
+      <xacro:insert_block name="joint_pose"/>
+      <axis xyz="0 ${reflect} 0"/>
+      <!-- <dynamics damping="100" friction="1"/> -->
+    </joint>
+
+    <transmission name="${prefix}_wheel_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${prefix}_wheel">
+        <hardwareInterface>VelocityJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="${prefix}_actuator">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+  </xacro:macro>
+
+  <link name="base_link"></link>
+  <joint name="chassis_base_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="chassis"/>
+    <origin xyz="0 0 ${(base_height/2)+wheel_radius-wheel_height}"/>
+  </joint>
+
+  <link name="chassis">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://emcee_description/meshes/visual/chassis.dae"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+    <collision>
+      <origin xyz="0.03 0 0"/>
+      <geometry>
+        <box size="${base_length} ${base_width} ${base_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0.1 0 0" rpy="0 0 0"/>
+      <!-- <origin xyz="0.39809 0.40556 0.64213" rpy="0 0 0" /> -->
+      <!-- <mass value="1" /> -->
+      <mass value="18.65"/>
+      <inertia ixx="0.541922" ixy="2.8e-5" ixz="-0.01424" iyy="1.50291" iyz="0.000144" izz="1.71709"/>
+    </inertial>
+  </link>
+
+  <!-- reflect is only used to set the wheel joints. it turned out that the right joints were oriented
+  backwards. I don't know why this was different from other examples. -->
+  <xacro:wheel prefix="left_front" reflect="1">
+    <origin xyz="${(base_length/2)-(wheel_location_from_front)} ${(base_width/2)+(wheel_width/2)} ${-(base_height/2)+wheel_height}" rpy="0 0 0"/>
+  </xacro:wheel>
+  <xacro:wheel prefix="left_rear" reflect="1">
+    <origin xyz="${-(base_length/2)+(wheel_location_from_back)} ${(base_width/2)+(wheel_width/2)} ${-(base_height/2)+wheel_height}" rpy="0 0 0"/>
+  </xacro:wheel>
+  <xacro:wheel prefix="right_front" reflect="-1">
+    <origin xyz="${(base_length/2)-(wheel_location_from_front)} ${-(base_width/2)-(wheel_width/2)} ${-(base_height/2)+wheel_height}" rpy="${PI} 0 0"/>
+  </xacro:wheel>
+  <xacro:wheel prefix="right_rear" reflect="-1">
+    <origin xyz="${-(base_length/2)+(wheel_location_from_back)} ${-(base_width/2)-(wheel_width/2)} ${-(base_height/2)+wheel_height}" rpy="${PI} 0 0"/>
+  </xacro:wheel>
+
+  <link name="sled">
+    <visual>
+      <geometry>
+        <mesh filename="package://emcee_description/meshes/visual/sled.dae"/>
+      </geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <material name="green"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://emcee_description/meshes/collision/sled_simple.dae"/>
+        <!-- <box size="${sled_width} ${sled_length} ${sled_height}"/> -->
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <!-- <origin xyz="0.2882 0.052765 0.007624" rpy="0 0 0" /> -->
+      <!-- <mass value="1" /> -->
+      <mass value="12.25"/>
+      <inertia ixx="0.225942" ixy="-5.6e-5" ixz="0.041831" iyy="0.162776" iyz="4.5e-5" izz="0.312502"/>
+    </inertial>
+  </link>
+
+  <joint name="sled_joint" type="prismatic">
+    <parent link="chassis"/>
+    <child link="sled"/>
+    <axis rpy="0 0 0" xyz="1 0 0"/>
+    <!-- <dynamics damping="0.1" friction="0"/> -->
+    <dynamics damping="100" friction="1"/>
+    <limit effort="1000" lower="${-(base_length/2)-0.0508+(sled_width/2)}" upper="${(base_length/2)-0.0508-(sled_width/2)}" velocity="0.1"/>
+    <origin rpy="0 0 0" xyz="0 0 ${(base_height/2)+0.04}"/>
+  </joint>
+
+  <link name="sensor_post">
+    <visual>
+      <geometry>
+        <mesh filename="package://emcee_description/meshes/visual/sensor_post.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="${sensor_mount_depth} ${sensor_mount_width} ${sensor_mount_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- xyz = 0.1365 0.11018 0.25799 -->
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <!-- <mass value="1"/> -->
+      <mass value="0.421686"/>
+      <inertia ixx="0.003291" ixy="-2e-6" ixz="0" iyy="0.00014" iyz="0" izz="0.003203"/>
+    </inertial>
+  </link>
+
+  <joint name="sensor_post_joint" type="fixed">
+    <parent link="sled"/>
+    <child link="sensor_post"/>
+    <origin rpy="0 0 0" xyz="${(sled_width/2) - (sensor_mount_depth/2) - 0.028575} 0 ${(sled_height/2) + (sensor_mount_height/2)}"/>
+  </joint>
+
+  <link name="ir_camera">
+    <visual>
+      <geometry>
+        <box size="0.007 0.130 0.020"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.007 0.130 0.020"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.1"/>
+      <inertia ixx="${dummy_inertia}" ixy="0" ixz="0" iyy="${dummy_inertia}" iyz="0" izz="${dummy_inertia}"/>
+    </inertial>
+  </link>
+
+  <joint name="ir_camera_joint" type="fixed">
+    <parent link="sensor_post"/>
+    <child link="ir_camera"/>
+    <!-- TODO: get exact position -->
+    <origin rpy="0 0 0" xyz="0.015 0 .07"/>
+  </joint>
+
+  <!-- TODO: fix joints -->
+  <link name="laser">
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry >
+        <mesh filename="package://emcee_description/meshes/visual/laser.dae"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.08 0.1 0.1"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- xyz = "0.13726 0.267092 0.257687" -->
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <!-- <mass value="1"/> -->
+      <mass value="0.193569"/>
+      <inertia ixx="0.00021" ixy="1.4e-5" ixz="1e-6" iyy="0.000203" iyz="0" izz="0.00017"/>
+    </inertial>
+  </link>
+
+  <!-- <joint name="laser_joint" type="revolute">
+  	<parent link="sensor_post" />
+  	<child link="laser" />
+  	<origin xyz="0 0 ${(sensor_mount_height/2)}" rpy="0 0 3.14159" />
+  	<axis xyz="0 1 0" />
+  	<limit lower="-0.7853975" upper="0" effort="1000" velocity="1" />
+  </joint> -->
+  <joint name="laser_joint" type="fixed">
+    <parent link="sensor_post"/>
+    <child link="laser"/>
+    <origin xyz="0 0 ${(sensor_mount_height/2)}" rpy="0 0 3.14159"/>
+  </joint>
+
+  <link name="arm">
+    <visual>
+      <origin xyz="0.01 -.01 .02"/>
+      <geometry>
+        <mesh filename="package://emcee_description/meshes/visual/arms.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0.01 -.01 .02"/>
+      <geometry>
+        <mesh filename="package://emcee_description/meshes/collision/arms_simple.dae"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- xyz="-0.024425 0.120927 -0.01018" -->
+      <origin xyz="0.439315 0.004673 -0.035609" rpy="0 0 0"/>
+      <!-- <mass value=".001"/> -->
+      <mass value="6.14067"/>
+      <!-- <inertia ixx="0.3" ixy="0" ixz="0" iyy="0.5" iyz="0" izz="0.2"/> -->
+
+      <!-- <inertia ixx="0.581471" ixy="-3e-6" ixz="-6.6e-5" iyy="0.87075" iyz="0.128097" izz="0.39687"/> -->
+      <inertia iyy="0.581471" ixy="6.6e-5" iyz="-3e-6" ixx="0.39687" ixz="-0.128097" izz="0.87075"/>
+
+      <!-- from meshlab -->
+      <!-- <inertia ixx="0.000306" ixy="-0.000062" ixz="-0.000094" iyy="0.000440" iyz="-0.0" izz="-0.000666"/> -->
+<!-- multiply by mass, divide by volume? -->
+      <!-- <inertia ixx="0.000306" ixy="-0.000062" ixz="-0.000094" iyy="0.000440" iyz="-0.0" izz="-0.000666"/> -->
+      <!-- <inertia ixx="0.00187904502" ixy="-0.00038072154" ixz="-0.00057722298" iyy="0.0027018948" iyz="-0.0" izz="-0.00408968622" /> -->
+      <!-- <inertia ixx="2.43584449714" ixy="-0.493537120336" ixz="-0.748265956639" iyy="3.50252149916" iyz="-0.0" izz="-5.30154390555" /> -->
+    </inertial>
+  </link>
+  <!-- .236 -->
+  <joint name="arm_joint" type="revolute">
+    <parent link="sled"/>
+    <child link="arm"/>
+    <origin xyz="-0.236 0 ${arm_block_height + 0.0255}"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-0.253177" upper="0.30918" effort="1000000" velocity="0.1"/>
+    <dynamics damping="0.1" friction="0"/>
+  </joint>
+
+  <link name="bucket">
+    <visual>
+      <origin xyz="0.00 0 0.00"/>
+      <geometry>
+        <mesh filename="package://emcee_description/meshes/visual/bucket.dae"/>
+        />
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0.00 0 0.00"/>
+      <geometry>
+        <mesh filename="package://emcee_description/meshes/collision/bucket_simple.dae"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <!-- xyz="-0.304153 0.030822 -0.01735" -->
+      <!-- <origin xyz="0.1 0 0.05" rpy="0 0 0"/> -->
+      <origin xyz="0.124844 -0.000416 0.002654" rpy="0 ${PI/7} 0"/>
+      <!-- <mass value="1"/> -->
+      <mass value="3.92566"/>
+      <inertia ixx="0.216901" ixy="0" ixz="-0.007835" iyy="0.042509" iyz="0" izz="0.243738"/>
+    </inertial>
+  </link>
+
+  <joint name="bucket_joint" type="revolute">
+    <parent link="arm"/>
+    <child link="bucket"/>
+    <axis xyz="0 1 0"/>
+    <origin xyz=".965 0 -0.282"/>
+    <limit lower="${-0.40}" upper="${3.14159/2}" effort="100000" velocity="1"/>
+    <dynamics damping="0.1" friction="0"/>
+  </joint>
+
+  <!-- TODO: This is from the copy and paste: Make this internal_imu_link or something, and use a mixed-in xacro
+       to supply the joint between it and imu_link. This is important so that imu_link
+       always points to the "active" IMU. When an upgrade IMU is connected, the
+       internal_imu_link should remain, but imu_link should point to the upgrade one. -->
+  <link name="imu_link">
+    <inertial>
+      <mass value="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="${dummy_inertia}" ixy="0.0" ixz="0.0" iyy="${dummy_inertia}" iyz="0.0" izz="${dummy_inertia}"/>
+    </inertial>
+  </link>
+  <joint name="imu_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="imu_link"/>
+  </joint>
+
+  <!-- Bring in simulation data for Gazebo. -->
+  <xacro:include filename="emcee.gazebo"/>
+
+  <!-- wheel transmissions are done within the wheel macro. -->
+
+  <!-- <xacro:include filename="emcee.transmission" /> -->
+
+
+
+  <transmission name="sled_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="sled_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="sled_linear_actuator">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="arm_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="arm_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="arm_linear_actuators">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="bucket_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="bucket_joint">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="bucket_linear_actuator">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+</robot>
+
+<!-- TODO: scale up the collision DAEs.  When I reduced the triangle count (complexity), the size of the shapes dimished.
+The collisions should be bigger than reality.  -->
+<!-- TODO: add macros to replace any hard coded values -->

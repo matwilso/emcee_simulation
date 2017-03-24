@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<sdf version="1.5">
+  <world name="default">
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <model name="nasa_arena">
+      <pose>0 0 0  0 0 0</pose>
+      <static>true</static>
+      <link name="body">
+        <inertial>
+          <mass>0.1</mass>
+          <inertia>
+            <ixx>1</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>1</iyy>
+            <iyz>0</iyz>
+            <izz>1</izz>
+          </inertia>
+        </inertial>
+        <visual name="Arena_Visual">
+          <geometry>
+            <!-- <mesh><uri>file://../meshes/arena/nasa_arena.dae</uri></mesh> -->
+            <mesh><uri>model://emcee_description/meshes/arena/nasa_arena.dae</uri></mesh>
+          </geometry>
+        </visual>
+        <collision name="Arena_Surface">
+          <geometry>
+            <!-- <mesh><uri>file://../meshes/arena/nasa_arena.dae</uri></mesh> -->
+            <mesh><uri>model://emcee_description/meshes/arena/nasa_arena.dae</uri></mesh>
+          </geometry>
+        </collision>
+        <friction>
+            <ode>
+                <mu>50.0</mu>
+                <mu2>50.0</mu2>
+            </ode>
+        </friction>
+      </link>
+    </model>
+  </world>
+</sdf>

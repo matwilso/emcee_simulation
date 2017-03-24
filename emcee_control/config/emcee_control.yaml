@@ -1,0 +1,71 @@
+#Author: Matt Wilson mattwilsonmbw AT gmail
+
+#This loads all of the controllers for ros_control gazebo
+
+# Publish all joint states -----------------------------------
+emcee_joint_state_controller:
+  type: joint_state_controller/JointStateController
+  publish_rate: 50
+
+# Position Controllers ---------------------------------------
+# I tuned these pid gains roughly, by hand. The gains had to be set pretty high
+# because the joints are pretty damped or something.
+# http://gazebosim.org/tutorials?tut=ros_control&cat=connect_ros#Visualizethecontroller%27sperformance
+emcee_sled_position_controller:
+  type: effort_controllers/JointPositionController
+  pid: {p: 32000.0, i: 10.0, d: 700.0}
+  joint: sled_joint
+emcee_arm_position_controller:
+  type: effort_controllers/JointPositionController
+  joint: arm_joint
+  pid: {p: 16000.0, i: 20.0, d: 80.0}
+emcee_bucket_position_controller:
+  type: effort_controllers/JointPositionController
+  joint: bucket_joint
+  pid: {p: 120, i: 0.5, d: 25.0}
+  # pid: {p: 500.0, i: 1, d: 10.0}
+
+
+
+# I adapted this section from Clearpath's jackal repo: https://github.com/jackal/jackal/blob/indigo-devel/jackal_control/config/control.yaml
+# Reference: http://wiki.ros.org/diff_drive_controller
+emcee_velocity_controller:
+  type: "diff_drive_controller/DiffDriveController"
+  left_wheel: ['left_front_wheel', 'left_rear_wheel']
+  right_wheel: ['right_front_wheel', 'right_rear_wheel']
+  publish_rate: 50 #Hz
+
+  base_frame_id: base_link
+
+
+  pose_covariance_diagonal: [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 0.03]
+  twist_covariance_diagonal: [0.001, 0.001, 0.001, 1000000.0, 1000000.0, 0.03]
+  cmd_vel_timeout: 0.25
+
+  k_l: 0.1
+  k_r: 0.1
+
+  # Odometry fused with IMU is published by robot_localization, so
+  # no need to publish a TF based on encoders alone.
+  # TODO: set this back
+  enable_odom_tf: false
+
+  # Wheel separation and radius multipliers
+  wheel_separation_multiplier: 1.0 # default: 1.0
+  wheel_radius_multiplier    : 1.0 # default: 1.0
+
+  # Velocity and acceleration limits
+  # Whenever a min_* is unspecified, default to -max_*
+  # TODO: tune these to the actual robot
+  linear:
+    x:
+      has_velocity_limits    : true
+      max_velocity           : 1.0   # m/s
+      has_acceleration_limits: true
+      max_acceleration       : 3.0   # m/s^2
+  angular:
+    z:
+      has_velocity_limits    : true
+      max_velocity           : 5.0   # rad/s
+      has_acceleration_limits: true
+      max_acceleration       : 5.0   # rad/s^2

@@ -1,0 +1,12 @@
+<launch>
+  
+<include file="$(find emcee_description)/launch/gazebo.launch" />
+<include file="$(find emcee_control)/launch/control.launch" />
+
+<node pkg="topic_tools" type="relay" name="turtle_relay"
+      args="turtle1/cmd_vel /emcee_velocity_controller/cmd_vel" />
+
+<!-- rosrun turtlesim turtle_teleop_key -->
+<node pkg="turtlesim" type="turtle_teleop_key" name="teleop"/>
+
+</launch>

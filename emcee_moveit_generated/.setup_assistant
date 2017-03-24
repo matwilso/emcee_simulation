@@ -1,0 +1,10 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: emcee_description
+    relative_path: urdf/emcee.urdf.xacro
+  SRDF:
+    relative_path: config/emcee.srdf
+  CONFIG:
+    author_name: Matt Wilson
+    author_email: mattwilsonmbw@gmail.com
+    generated_timestamp: 1483482126

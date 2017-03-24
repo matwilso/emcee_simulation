@@ -1,0 +1,6 @@
+controller_list:
+  - name: fake_upper_controller
+    joints:
+      - sled_joint
+      - arm_joint
+      - bucket_joint

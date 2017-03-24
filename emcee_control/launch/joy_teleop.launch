@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<launch>
+<!-- Takes joy message and translates them to the correct Twist message -->
+<node pkg="emcee_control" type="joy_teleop" name="joy_teleop_node" output="screen"/>
+
+<!--
+Usage is: roslaunch joy_drive.launch <arg_name>:=<value>, where arg_name is the name=. ex. input:=js1
+-->
+<arg name="world" default="nasa" /> <!-- other option is: empty -->
+<arg name="controller" default="xbox" /> <!-- other option is: ps3 -->
+<arg name="input" default="js0" />
+<arg name="paused" default="false" />
+<arg name="gui" default="true" />
+<arg name="debug" default="0" />
+
+<rosparam param="debug" subst_value="True">$(arg debug)</rosparam>
+
+<!-- Start the gazebo world -->
+<include file="$(find emcee_description)/launch/gazebo.launch">
+  <arg name="world" default="$(arg world)" />
+  <arg name="paused" default="$(arg paused)" />
+  <arg name="gui" default="$(arg gui)" />
+</include>
+
+<!-- Launch the controllers -->
+<include file="$(find emcee_control)/launch/control.launch" />
+
+<!-- joy node -->
+ <node respawn="true" pkg="joy"
+       type="joy_node" name="joy_node" >
+   <param name="dev" type="string" value="/dev/input/$(arg input)"/>
+   <param name="deadzone" value="0.12" />
+ </node>
+
+<!-- choose to load xbox or ps3 config. use: roslaunch joy_drive.launch controller:=xbox -->
+<group if="$(eval arg('controller') == 'xbox')">
+  <rosparam command="load" file="$(find emcee_control)/config/xbox_joy.yaml" />
+</group>
+<group if="$(eval arg('controller') == 'ps3')">
+  <rosparam command="load" file="$(find emcee_control)/config/ps3_joy.yaml" />
+</group>
+
+</launch>

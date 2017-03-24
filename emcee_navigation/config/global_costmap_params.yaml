@@ -1,0 +1,11 @@
+global_costmap:
+  global_frame: odom
+  robot_base_frame: base_link
+  update_frequency: 20
+  publish_frequency: 5
+  # always_send_full_costmap: false
+  static_map: true
+  plugins:
+    - {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"}
+    - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
+  #  - {name: static_layer, type: "rtabmap_ros::StaticLayer"}
