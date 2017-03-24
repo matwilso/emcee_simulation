@@ -355,7 +355,9 @@
     <dynamics damping="0.1" friction="0"/>
   </joint>
 
-  <!-- TODO: This is from the copy and paste: Make this internal_imu_link or something, and use a mixed-in xacro
+  <!-- TODO: This is the note from the copy and paste:
+
+       Make this internal_imu_link or something, and use a mixed-in xacro
        to supply the joint between it and imu_link. This is important so that imu_link
        always points to the "active" IMU. When an upgrade IMU is connected, the
        internal_imu_link should remain, but imu_link should point to the upgrade one. -->

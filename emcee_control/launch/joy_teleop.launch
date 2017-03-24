@@ -7,8 +7,8 @@
 Usage is: roslaunch joy_drive.launch <arg_name>:=<value>, where arg_name is the name=. ex. input:=js1
 -->
 <arg name="world" default="nasa" /> <!-- other option is: empty -->
-<arg name="controller" default="xbox" /> <!-- other option is: ps3 -->
-<arg name="input" default="js0" />
+<arg name="controller" default="ps3" /> <!-- other option is: ps3 -->
+<arg name="input" default="js1" />
 <arg name="paused" default="false" />
 <arg name="gui" default="true" />
 <arg name="debug" default="0" />

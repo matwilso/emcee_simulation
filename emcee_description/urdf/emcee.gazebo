@@ -9,6 +9,17 @@
   </gazebo>
 
   <gazebo>
+  <plugin name="imu_plugin" filename="libgazebo_ros_imu.so">
+    <alwaysOn>true</alwaysOn>
+    <bodyName>imu_link</bodyName>
+    <topicName>imu/data</topicName>
+    <serviceName>imu_service</serviceName>
+    <gaussianNoise>0.0</gaussianNoise>
+    <updateRate>20.0</updateRate>
+  </plugin>
+</gazebo>
+<!--
+  <gazebo>
   <plugin name="imu_controller" filename="libhector_gazebo_ros_imu.so">
     <robotNamespace>/</robotNamespace>
     <updateRate>50.0</updateRate>
@@ -23,7 +34,7 @@
     <headingDrift>0.005</headingDrift>
     <headingGaussianNoise>0.005</headingGaussianNoise>
   </plugin>
-</gazebo>
+</gazebo> -->
 
 
   <!-- links -->
@@ -98,6 +109,8 @@
     </plugin>
   </sensor>
 </gazebo>
+
+
 
   <!-- camera -->
   <!-- TODO: try to get the openni plugin working. This is currently a standard camera. -->
