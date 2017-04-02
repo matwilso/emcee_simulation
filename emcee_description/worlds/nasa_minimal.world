@@ -25,14 +25,21 @@
         <visual name="Arena_Visual">
           <geometry>
             <!-- <mesh><uri>file://../meshes/arena/nasa_arena.dae</uri></mesh> -->
-            <mesh><uri>model://emcee_description/meshes/arena/nasa_arena.dae</uri></mesh>
+            <mesh><uri>model://emcee_description/meshes/arena/nasa_minimal.dae</uri></mesh>
           </geometry>
         </visual>
         <collision name="Arena_Surface">
           <geometry>
             <!-- <mesh><uri>file://../meshes/arena/nasa_arena.dae</uri></mesh> -->
-            <mesh><uri>model://emcee_description/meshes/arena/nasa_arena.dae</uri></mesh>
+            <mesh><uri>model://emcee_description/meshes/arena/nasa_minimal.dae</uri></mesh>
           </geometry>
+          <surface>
+          <contact>
+              <ode>
+                <max_vel>1.0</max_vel>
+            </ode>
+        </contact>
+        </surface>
         </collision>
         <friction>
             <ode>

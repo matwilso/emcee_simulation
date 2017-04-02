@@ -91,6 +91,7 @@
       <mu1 value="5"/>
       <mu2 value="5"/>
       <!-- <minDepth>0.00</minDepth> -->
+      <max_vel>0.01</max_vel>
       <material>Gazebo/DarkGrey</material>
     </gazebo>
 

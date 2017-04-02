@@ -22,7 +22,7 @@ the documentation for roslaunch. http://wiki.ros.org/roslaunch/XML -->
 
 <!-- Depending on if 'nasa' or 'empty' worlds were chosen, set the world_path argument to the correct path -->
   <group if="$(eval arg('world') == 'nasa')">
-    <arg name="world_path" value="$(find emcee_description)/worlds/nasa_arena.world"/>
+    <arg name="world_path" value="$(find emcee_description)/worlds/nasa_minimal.world"/>
       <!-- Launch Gazebo according to the world chosen -->
       <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="debug" value="0" />

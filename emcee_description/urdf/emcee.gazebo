@@ -37,47 +37,61 @@
 </gazebo> -->
 
 
+
+  <gazebo>
+    <max_vel>0.01</max_vel>
+  </gazebo>
+
   <!-- links -->
+
   <gazebo reference="chassis">
     <mu1>0.2</mu1>
     <mu2>0.2</mu2>
+    <max_vel>0.01</max_vel>
   </gazebo>
   <gazebo reference="sled">
     <mu1>0.2</mu1>
     <mu2>0.2</mu2>
+    <max_vel>0.01</max_vel>
     <implicitSpringDamper>1</implicitSpringDamper>
   </gazebo>
   <gazebo reference="sensor_post">
     <mu1>0.2</mu1>
     <mu2>0.2</mu2>
+    <max_vel>0.01</max_vel>
   </gazebo>
   <gazebo reference="laser">
     <mu1>0.2</mu1>
     <mu2>0.2</mu2>
+    <max_vel>0.01</max_vel>
   </gazebo>
   <gazebo reference="bucket">
     <mu1>0.2</mu1>
     <mu2>0.2</mu2>
+    <max_vel>0.01</max_vel>
     <implicitSpringDamper>1</implicitSpringDamper>
   </gazebo>
   <gazebo reference="arm">
     <mu1>0.2</mu1>
     <mu2>0.2</mu2>
     <implicitSpringDamper>1</implicitSpringDamper>
-    <!-- <minDepth>0.00</minDepth> -->
+    <max_vel>0.01</max_vel>
   </gazebo>
   <gazebo reference="ir_camera">
     <material>Gazebo/Grey</material>
+    <max_vel>0.01</max_vel>
   </gazebo>
   <gazebo reference="imu_link">
     <turnGravityOff>false</turnGravityOff>
+    <max_vel>0.01</max_vel>
   </gazebo>
 
 <!-- lidar -->
 <gazebo reference="laser">
+    <max_vel>0.01</max_vel>
   <sensor type="gpu_ray" name="laser_sensor">
-    <pose>0 0 0 0 0 0</pose>
     <visualize>false</visualize>
+    <pose>0 0 0 0 0 0</pose>
     <update_rate>40</update_rate>
     <ray>
       <scan>
@@ -115,6 +129,7 @@
   <!-- camera -->
   <!-- TODO: try to get the openni plugin working. This is currently a standard camera. -->
   <gazebo reference="ir_camera">
+      <max_vel>0.01</max_vel>
       <update_rate>30.0</update_rate>
       <sensor type="camera" name="camera1">
       <camera name="head">
